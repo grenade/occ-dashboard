@@ -20,14 +20,23 @@ class ManifestComponentElement extends React.Component {
           </li>);
         break;
       case 'Command':
+      case 'Value':
       case 'ValueData':
       case 'Key':
       case 'ProductId':
       case 'Target':
       case 'Link':
+      case 'sha512':
         return (
           <li>
             {this.props.name}: <pre style={{display: 'inline'}}>{this.props.value}</pre>
+          </li>);
+        break;
+      case 'Source':
+      case 'Url':
+        return (
+          <li>
+            {this.props.name}: <a href={this.props.value} target="_blank">{this.props.value}</a>
           </li>);
         break;
       case 'DependsOn':

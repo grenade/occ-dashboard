@@ -38,12 +38,12 @@ class App extends React.Component {
         <Row>
           <h2>ami builds</h2>
         </Row>
-        <Accordion defaultActiveKey="0">
-        {
-          this.state.builds.map(build => (
-            <BuildSummary build={build} key={build.worker} />
-          ))
-        }
+        <Accordion>
+          {
+            this.state.builds.map(build => (
+              <BuildSummary build={build} key={build.worker} />
+            ))
+          }
         </Accordion>
       </Container>
     );

@@ -59,22 +59,43 @@ class BuildSummary extends React.Component {
         <Card>
           <Card.Header>
             <Accordion.Toggle as={Button} variant="link" eventKey={this.props.build.worker}>
-              {this.props.build.worker}
+              <strong style={{fontSize: 'larger'}}>{this.props.build.worker}</strong>
             </Accordion.Toggle>
+            <div className="float-right text-right muted">
+              <small>
+                occ revision:&nbsp;
+                <a href={'https://github.com/mozilla-releng/OpenCloudConfig/commit/' + (this.state.amis['us-west-2'] && this.state.amis['us-west-2'][0].revision)}>
+                  {this.state.amis['us-west-2'] && this.state.amis['us-west-2'][0].revision}
+                </a>
+                <br />
+                tc build:&nbsp;
+                <a href={'https://firefox-ci-tc.services.mozilla.com/tasks/' + this.state.task}>
+                  {this.state.task}
+                </a>
+                <br />
+                last update: {this.state.amis['us-west-2'] && (new Date(this.state.amis['us-west-2'][0].created)).toLocaleDateString()}
+              </small>
+            </div>
           </Card.Header>
           <Accordion.Collapse eventKey={this.props.build.worker}>
             <Card.Body>
               <ul>
                 <dt>
-                  occ build trigger commit:
+                  latest occ build trigger commits:
                 </dt>
                 <dd>
-                  <a href={'https://github.com/mozilla-releng/OpenCloudConfig/commit/' + (this.state.amis['us-west-2'] && this.state.amis['us-west-2'][0].revision)}>
-                    {this.state.amis['us-west-2'] && this.state.amis['us-west-2'][0].revision}
-                  </a>
+                  <ul>
+                  {this.state.amis['us-west-2'] && this.state.amis['us-west-2'].map(uswest2ami => (
+                    <li key={uswest2ami.revision}>
+                      <a href={'https://github.com/mozilla-releng/OpenCloudConfig/commit/' + (uswest2ami.revision)}>
+                        {uswest2ami.revision}
+                      </a> {(new Date(uswest2ami.created)).toLocaleDateString()}
+                    </li>
+                  ))}
+                  </ul>
                 </dd>
                 <dt>
-                  taskcluster ami build task:
+                  last taskcluster ami build task:
                 </dt>
                 <dd>
                   <a href={'https://firefox-ci-tc.services.mozilla.com/tasks/' + this.state.task}>
@@ -82,7 +103,7 @@ class BuildSummary extends React.Component {
                   </a>
                 </dd>
                 <dt>
-                  ec2 deployment ({this.state.amis['us-west-2'] && (new Date(this.state.amis['us-west-2'][0].created)).toLocaleDateString()}):
+                  last ec2 ami deployments ({this.state.amis['us-west-2'] && (new Date(this.state.amis['us-west-2'][0].created)).toLocaleDateString()}):
                 </dt>
                 <dd>
                   <ul>
@@ -105,27 +126,33 @@ class BuildSummary extends React.Component {
                   ):
                 </dt>
                 <dd>
-                  <ul>
+                  <Accordion>
                     {
                       this.state.components.map(c => c.ComponentType).filter((v, i, s) => s.indexOf(v) === i).map(ct => (
-                        <li key={ct}>
-                          {ct} ({this.state.components.filter(c => c.ComponentType === ct).length} components)
-                          <ul>
-                            {this.state.components.filter(c => c.ComponentType === ct).map(component => (
-                              <li key={component.ComponentType + '_' + component.ComponentName}>
-                                {component.ComponentName}
-                                <ul>
-                                  {Object.keys(component).filter(k => k !== 'ComponentType' && k !== 'ComponentName').map(key => (
-                                    <ManifestComponentElement name={key} value={component[key]} key={key} />
-                                  ))}
-                                </ul>
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
+                        <Card key={ct}>
+                          <Card.Header>
+                            <Accordion.Toggle as={Button} variant="link" eventKey={this.props.build.worker + '_' + ct}>
+                              {ct}
+                            </Accordion.Toggle> ({this.state.components.filter(c => c.ComponentType === ct).length} components)
+                          </Card.Header>
+                          <Accordion.Collapse eventKey={this.props.build.worker + '_' + ct}>
+                            <ul>
+                              {this.state.components.filter(c => c.ComponentType === ct).map(component => (
+                                <li key={component.ComponentType + '_' + component.ComponentName}>
+                                  {component.ComponentName}
+                                  <ul>
+                                    {Object.keys(component).filter(k => k !== 'ComponentType' && k !== 'ComponentName').map(key => (
+                                      <ManifestComponentElement name={key} value={component[key]} key={key} />
+                                    ))}
+                                  </ul>
+                                </li>
+                              ))}
+                            </ul>
+                          </Accordion.Collapse>
+                        </Card>
                       ))
                     }
-                  </ul>
+                  </Accordion>
                 </dd>
               </ul>
             </Card.Body>

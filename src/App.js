@@ -1,5 +1,10 @@
 import React from 'react';
 import BuildSummary from './BuildSummary';
+
+import Accordion from 'react-bootstrap/Accordion';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+
 import './App.css';
 
 
@@ -29,14 +34,18 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div>
-      <h2>ami builds</h2>
-      {
-        this.state.builds.map(build => (
-          <BuildSummary build={build} key={build.worker} />
-        ))
-      }
-      </div>
+      <Container>
+        <Row>
+          <h2>ami builds</h2>
+        </Row>
+        <Accordion defaultActiveKey="0">
+        {
+          this.state.builds.map(build => (
+            <BuildSummary build={build} key={build.worker} />
+          ))
+        }
+        </Accordion>
+      </Container>
     );
   }
 }
